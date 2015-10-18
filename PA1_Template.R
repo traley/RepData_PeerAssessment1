@@ -1,9 +1,9 @@
 Reproducible Research Peer Assessment Project # 1
 =================================================
-
-## Introduction
-
-This document is to present the analysis of data derived from a personal activity monitoring device.
+    
+    ## Introduction
+    
+    This document is to present the analysis of data derived from a personal activity monitoring device.
 
 The report was produced utilizing **R markdown** language.
 
@@ -12,8 +12,8 @@ The report was produced utilizing **R markdown** language.
 This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 
 The variables included in this dataset are:
-
-**steps:** Number of steps taking in a 5-minute interval (missing values are coded as NA)
+    
+    **steps:** Number of steps taking in a 5-minute interval (missing values are coded as NA)
 
 **date:** The date on which the measurement was taken in YYYY-MM-DD format
 
@@ -28,7 +28,7 @@ library("dplyr")
 library("ggplot2")
 library(lattice)
 ```
- 
+
 ## Loading and preprocessing the data
 
 ```{r}
@@ -85,13 +85,13 @@ sum(is.na(activ_data))
 
 ```{r}
 fill_na <- function(data, pervalue) {
- na_index <- which(is.na(data$steps))
- na_replace <- unlist(lapply(na_index, FUN=function(idx){
- interval = data[idx,]$interval
- pervalue[pervalue$interval == interval,]$steps}))
- fill_steps <- data$steps
- fill_steps[na_index] <- na_replace
- fill_steps
+    na_index <- which(is.na(data$steps))
+    na_replace <- unlist(lapply(na_index, FUN=function(idx){
+        interval = data[idx,]$interval
+        pervalue[pervalue$interval == interval,]$steps}))
+    fill_steps <- data$steps
+    fill_steps[na_index] <- na_replace
+    fill_steps
 }
 
 new_data <- data.frame(steps = fill_na(activ_data, step.day), date = activ_data$date, interval = activ_data$interval)
@@ -123,25 +123,25 @@ median(fill.step.day$steps)
 
 ## Do these values differ from the estimates from the first part of the assignment?
 **While the mean remains the same, the median adjusted slightly from 10765 to 10766.19.**
-**The impact of removing the missing values has increased the peak of number of steps per day.**
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
-### Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
-
-```{r}
+    **The impact of removing the missing values has increased the peak of number of steps per day.**
+    
+    
+    
+    ## Are there differences in activity patterns between weekdays and weekends?
+    ### Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+    
+    ```{r}
 activ_data$date <- as.Date(activ_data$date, "%Y-%m-%d")
 day <- weekdays(activ_data$date)
 day_type <- vector()
 for (i in 1:nrow(activ_data)) {
     if (day[i] == "Saturday") {
-    day_type[i] <- "Weekend"
+        day_type[i] <- "Weekend"
     } else if (day[i] == "Sunday") {
-    day_type[i] <- "Weekend"
+        day_type[i] <- "Weekend"
     } else {
-    day_type[i] <- "Weekday"
-}
+        day_type[i] <- "Weekday"
+    }
 }
 activ_data$day_type <- day_type
 activ_data$day_type <- factor(activ_data$day_type)

@@ -23,7 +23,8 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 
 ## Load necessary R libraries
 
-```{r warning=FALSE, message=FALSE}
+
+```r
 library("dplyr")
 library("ggplot2")
 library(lattice)
@@ -31,7 +32,8 @@ library(lattice)
  
 ## Loading and preprocessing the data
 
-```{r}
+
+```r
 setwd("C:/Users/Tim/Documents/R")
 activ_data <- read.csv("activity.csv")
 activ_data <- tbl_df(activ_data)
@@ -40,18 +42,31 @@ activ_data <- tbl_df(activ_data)
 ## What is mean total number of steps taken per day?
 Create a histogram to represent the total number of steps taken per day.
 
-```{r}
+
+```r
 steps.day <- aggregate(steps ~ date, data = activ_data, FUN = sum)
 ggplot(steps.day, aes(x = steps)) + geom_histogram(fill = "blue", binwidth = 1000) + labs(title = "Histogram of Steps Taken per Day", x = "Number of Steps per Day", y = "Frequency") + theme_bw()
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
 ## Calculate the mean and median of the total number of steps taken per day. 
-```{r}
+
+```r
 mean(steps.day$steps)
 ```
 
-```{r}
+```
+## [1] 10766.19
+```
+
+
+```r
 median(steps.day$steps)
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -59,16 +74,24 @@ median(steps.day$steps)
 
 Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r}
+
+```r
 step.day <- aggregate(steps ~ interval, data = activ_data, FUN  = mean)
 ggplot(step.day, aes(x=interval, y=steps)) + geom_line(color="blue") + labs(title="Average Daily Activity Pattern", x="Interval", y="Number of Steps") + theme_bw()
 ```
 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+
 
 ## Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r}
+
+```r
 step.day$interval[which.max(step.day$steps)]
+```
+
+```
+## [1] 835
 ```
 
 The 835th interval.
@@ -77,13 +100,19 @@ The 835th interval.
 
 Calculate and report the total number of missing values in the dataset.
 
-```{r}
+
+```r
 sum(is.na(activ_data))
+```
+
+```
+## [1] 2304
 ```
 
 ### Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r}
+
+```r
 fill_na <- function(data, pervalue) {
  na_index <- which(is.na(data$steps))
  na_replace <- unlist(lapply(na_index, FUN=function(idx){
@@ -95,12 +124,16 @@ fill_na <- function(data, pervalue) {
 }
 
 new_data <- data.frame(steps = fill_na(activ_data, step.day), date = activ_data$date, interval = activ_data$interval)
-
 ```
 
 Confirm there are no missing values
-```{r}
+
+```r
 sum(is.na(new_data$steps))
+```
+
+```
+## [1] 0
 ```
 
 
@@ -108,17 +141,32 @@ sum(is.na(new_data$steps))
 
 Create a histogram using similar method as above.
 
-```{r}
+
+```r
 fill.step.day <- aggregate(steps ~ date, new_data, sum)
 colnames(fill.step.day) <- c("date", "steps")
 ggplot(fill.step.day, aes(x = steps)) + geom_histogram(fill = "blue", binwidth = 1200) + labs(title = "Histogram of Steps Taken per Day", x = "Number of Steps per Day", y = "Frequency") + theme_bw()
 ```
 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
+
 ## Calculate the mean and median of the total number of steps taken per day.
 
-```{r}
+
+```r
 mean(fill.step.day$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(fill.step.day$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 ## Do these values differ from the estimates from the first part of the assignment?
@@ -130,7 +178,8 @@ median(fill.step.day$steps)
 ## Are there differences in activity patterns between weekdays and weekends?
 ### Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 activ_data$date <- as.Date(activ_data$date, "%Y-%m-%d")
 day <- weekdays(activ_data$date)
 day_type <- vector()
@@ -151,6 +200,8 @@ names(steps_per_day) <- c("interval", "day_type", "steps")
 
 xyplot(steps ~ interval | day_type, steps_per_day, type = "l", layout = c(1, 2), xlab = "Interval", ylab = "Number of steps")
 ```
+
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
 
 
 
